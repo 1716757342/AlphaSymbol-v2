@@ -163,23 +163,22 @@ def train(
                                                                            self.visit_times,
                                                                            self.state.current_value,
                                                                            self.state.compute_reward())
-
-    class State(object):  # 某游戏的状态，例如模拟一个数相加等于1的游戏
+    class State(object):
         def __init__(self):
-            self.current_value = 0.0  # 当前数
-            self.current_round_index = 0  # 第几轮(长度）
-            self.cumulative_choices = []  # 选择过程记录
+            self.current_value = 0.0
+            self.current_round_index = 0
+            self.cumulative_choices = []
             self.counter = 1
             # self.ind = 6
 
-        def is_terminal(self):  # 判断游戏是否结束
+        def is_terminal(self):  # Determining if a complete expression has been obtained.
             if self.counter == 0:
                 # if self.counter == 0:
                 return True
             else:
                 return False
 
-        def compute_reward(self):  # 当前得分，越接近1分值越高
+        def compute_reward(self):  # Current score, with a higher value closer to 1 indicating a better performance.
             return reward_nrmse(self.current_value, y_rnn)
             # return 0.99 ** (len(self.cumulative_choices)) / np.sqrt(1 + (np.sum((y_rnn - self.current_value) ** 2)) / len(X_rnn))
             # return -np.sum(abs(y_1 - self.current_value)) / num
@@ -242,30 +241,21 @@ def train(
             left = sub_node.get_quality_value() / (sub_node.get_visit_times() + 0.0000001)
             if 1:
                 # print('node.get_visit_times',node.get_visit_times())
-                # right = 2.0 * np.sqrt(math.log(node.get_visit_times() + 0.0000001) / (sub_node.get_visit_times()+0.0000001))  ##论文
+                # right = 2.0 * np.sqrt(math.log(node.get_visit_times() + 0.0000001) / (sub_node.get_visit_times()+0.0000001))
                 # if node != None:
-                #     right = 4/len(operator_list) * np.sqrt(node.get_visit_times()) / (1 + sub_node.get_visit_times())  ##论文
+                #     right = 4/len(operator_list) * np.sqrt(node.get_visit_times()) / (1 + sub_node.get_visit_times())
                 # else:
-                #     right = 4/len(operator_list) * np.sqrt(1) / (1 * sub_node.get_visit_times())  ##论文
+                #     right = 4/len(operator_list) * np.sqrt(1) / (1 * sub_node.get_visit_times())
 
-                right = 2.0 * 1 / (0.00001 + 4 * sub_node.get_visit_times())  ##论文
+                right = 2.0 * 1 / (0.00001 + 4 * sub_node.get_visit_times())
             # else:
             #     right = 2.0 * np.sqrt(math.log(node.get_visit_times()) / (sub_node.get_visit_times()+0.0000001))
 
-            # if node.parent != None:
-            #     right=2.0*math.log(node.parent.get_visit_times())/sub_node.get_visit_times()
-            # else:
-            #     right = 2.0*math.log(node.get_visit_times()) / sub_node.get_visit_times()
-            # print('mcts_output'*5,mcts_output)
-            # print('mcts_output'*5,mcts_output_s)
             score = left + C * (right) * mcts_output[k]
             # print('score',score)
             if score > best_score:
                 best_score = score
                 best_sub_node = sub_node
-                # print("left",left)
-                # print('right',right)
-        # print('best_sub_node',best_sub_node.get_state().cumulative_choices)
         return best_sub_node
     def expand(node):  # 得到未扩展的子节点
         for i in range(len(operator_list)):
@@ -275,8 +265,8 @@ def train(
 
             while new_state in tried_sub_node_states:
                 print('a' * 200)
-                new_state = node.get_state().get_next_state_with_random_choice(operator_list)  ##为了不前后两次都选择同一个数字。
-                # print(new_state.get_state().get_next_state_with_random_choice().cumulative_choices)
+                new_state = node.get_state().get_next_state_with_random_choice(operator_list)  ##To avoid selecting the same number twice in consecutive choices.
+
             sub_node = Node()
             sub_node.set_state(new_state)
             node.add_child(sub_node)
@@ -284,10 +274,10 @@ def train(
 
     def backup(node, reward):
         while node != None:
-            node.visit_times_add_one()  ##访问次数加一
+            node.visit_times_add_one()  ##Incrementing the visit count by one.
             node.quality_value_add_n(reward)
             # node.set_quality_value(reward)
-            node = node.parent  ##递归
+            node = node.parent  ##Recursion
 
     def farward_best(l2, X, X2, d):
         global index_c
@@ -632,35 +622,6 @@ def train(
                 reward_2 = benchmark(best_list[0], X_rnn, y_rnn, best_seq, best_seq_l,N_var, index_x1)
                 # print('best_list',best_list[0])
             print(reward_2)
-
-            # l2 = []
-            # print(best_seq)
-            # best_seq_counter = 1
-            # for j in range(len(best_seq)):
-            #     l2.append(operator_list[int(best_seq[j])])
-            #     best_seq_counter = best_seq_counter + Arity(operator_list[int(best_seq[j])]) - 1
-            #     if best_seq_counter == 0:
-            #         break
-            #
-            # XX1 = X_constants[:,0].numpy()
-            # XX2 = X_constants[:,1].numpy()
-            # y = y_constants.numpy()
-            # print(l2)
-            # fun_loss = lambda D : np.mean((y -  farward_best(l2,XX1,XX2,D))**2)
-            # number_c = len(np.argwhere(np.array(l2) == 'c'))
-            # x0 = np.random.randn(number_c)
-            #
-            # print(x0)
-            # reward_2 = -np.inf
-            # if len(x0) > 0 and 1:
-            #     for i in range(1):
-            #         print("z"*100)
-            #         res = minimize(fun_loss, x0, method="BFGS")
-            #         print('resx',res.x)
-            #     # print(farward_best(l2,np.array(X_rnn[:,0]),np.array(X_rnn[:,1]),res.x))
-            #     reward_2 = reward_nrmse(torch.tensor(farward_best(l2,np.array(X_rnn[:,0]),np.array(X_rnn[:,1]),res.x)), y_rnn)
-            #     print(reward_2)
-
             if (reward_2 > best_performance):
                 print('best_performance',best_performance)
                 best_performance = torch.tensor(reward_2)
@@ -673,9 +634,7 @@ def train(
                     print("~ Early Stopping Met ~")
                     print(f"""Best Expression: {best_str}""")
                 break
-
-
-            # Compute risk threshold
+           # Compute risk threshold
             if (i == 0 and scale_initial_risk):
                 threshold = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
             else:
