@@ -800,7 +800,7 @@ def reward_nrmse(y_pred, y_rnn):
     # val = 1 / (1 + val)  # Squash
     # val = np.tanh(val)
     return val.item()
-    #####end#####
+    #####endendend#####
     #
     # loss = (y_pred - y_rnn)**2
     # # Min-Max scaling
