@@ -800,7 +800,7 @@ def reward_nrmse(y_pred, y_rnn):
     # val = 1 / (1 + val)  # Squash
     # val = np.tanh(val)
     return val.item()
-
+    #####end
     #
     # loss = (y_pred - y_rnn)**2
     # # Min-Max scaling
@@ -816,4 +816,4 @@ def reward_nrmse(y_pred, y_rnn):
     # val = torch.relu(1 - (torch.mean((y_pred - y_rnn) ** 2)/torch.mean((y_rnn - torch.mean(y_rnn))**2)))
     # print('val',val)
     # val = min(torch.nan_to_num(val, nan=-0.), torch.tensor(-0.))  # Fix nan and clip
-    # return val.item() #####end
+    # return val.item()
