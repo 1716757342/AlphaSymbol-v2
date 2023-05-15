@@ -1,0 +1,34 @@
+{"prior": {
+  "length": {
+    "min_": 2,
+    "max_": 40,
+    "on": true
+  },
+  "repeat": {
+    "tokens": "c",
+    "min_": null,
+    "max_": 11,
+    "on": true
+  },
+  "inverse": {
+    "on": true
+  },
+  "trig": {
+    "on": true
+  },
+  "const": {
+    "on": true
+  },
+  "no_inputs": {
+    "on": true
+  },
+  "uniform_arity": {
+    "on": false
+  },
+  "soft_length": {
+    "loc": 10,
+    "scale": 5,
+    "on": false
+  }
+ }
+}
