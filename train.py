@@ -1,16 +1,4 @@
-###############################################################################
-# General Information
-###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
 
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
-
-# train.py: Contains main training loop (and reward functions) for PyTorch
-# implementation of Deep Symbolic Regression.
-
-###############################################################################
-# Dependencies
-###############################################################################
 
 import time
 import random
@@ -195,7 +183,7 @@ def train(
         def set_counter(self, coun, s):
             self.counter = coun + Arity(s) - 1
 
-        def get_next_state_with_random_choice(self, SS):  # 得到下个状态
+        def get_next_state_with_random_choice(self, SS):  # You get to the next state
             # random_choice = random.choice([choice for choice in AVAILABLE_CHOICES] , p= PP)
             random_choice = SS
             # ind = IND - 1
@@ -203,12 +191,13 @@ def train(
             # print(random_choice)
             next_state = State()
             next_state.set_counter(self.counter, random_choice)
-            next_state.set_cumulative_choices(self.cumulative_choices + [random_choice])  ## 所选值的列表
+            next_state.set_cumulative_choices(self.cumulative_choices + [random_choice])  ## A list of selected symbols
             # if next_state.counter == 0:
             #     next_state.set_current_value(all_farward(next_state.cumulative_choices, X_rnn))  ##加以后的值
             # else:
             #     next_state.set_current_value(None)  ##加以后的值
-            next_state.set_current_round_index(self.current_round_index + 1)  ##长度，ex[-1,2,-1] 长度为3
+            next_state.set_current_round_index(self.current_round_index + 1)  ##Calculated length
+
             return next_state
 
     def r2(EEe, yy_1):
@@ -226,7 +215,8 @@ def train(
     def softmax(x,c=100):
         return np.exp(c*x)/(np.sum(np.exp(c*x)))
 
-    def best_child(node, is_exploration):  # 若子节点都扩展完了，求UCB值最大的子节点
+    def best_child(node, is_exploration):  # If all child nodes are extended, find the child node with the largest UCT value
+
         best_score = -sys.maxsize
         best_sub_node = None
         for k in range(len(operator_list)):
@@ -257,7 +247,7 @@ def train(
                 best_score = score
                 best_sub_node = sub_node
         return best_sub_node
-    def expand(node):  # 得到未扩展的子节点
+    def expand(node):  # Gets the unextended child node
         for i in range(len(operator_list)):
             tried_sub_node_states = [sub_node.get_state() for sub_node in node.get_children()]
             # print('tried_sub_node_states',tried_sub_node_states)
@@ -496,10 +486,6 @@ def train(
         if MS[0] == 'c':
             backup(expend_node, -10e10)
             continue
-        # print('expend_node.get_state().counter',expend_node.get_state().counter)
-        # print('expend_node.get_visit_times', expend_node.get_visit_times())
-
-
         # First sampling done outside of loop for initial batch size if desired
 
         # print('expend_node.get_state().cumulative_choices : ',expend_node.get_state().cumulative_choices)
@@ -528,8 +514,8 @@ def train(
         # sequences, sequence_lengths, log_probabilities, entropies = dsr_rnn.sample_sequence(initial_batch_size) ##initial_batch_size ：The number of sampled expression.
         batch_best = -np.inf
         for i in range(num_batches):
-            # Convert sequences into Pytorch expressions that can be evaluated
-            #### all constants
+
+            #### This code, when applied, will automatically assign two constants to each symbol, multiplied by one and followed by one.
             # Seq = []
             # for j in range(len(sequences)):
             #     l = sequences[j]
@@ -542,13 +528,15 @@ def train(
             # sequences = torch.tensor(Seq)
             # sequence_lengths = 5 * sequence_lengths
             ###################
+
+            # Convert sequences into Pytorch expressions that can be evaluated
             expressions = []
             for j in range(len(sequences)):
                 expressions.append(
                     Expression(operators, sequences[j].long().tolist(), sequence_lengths[j].long().tolist()).to(device)
                 )
 
-            # 计算epoch的平均表达式长度
+            # Calculate the average expression length of the epoch
             epoch_mean_length.append(torch.mean(sequence_lengths.float()).item())
             total_expr_lengths.append(sequence_lengths.float())
             # Optimize constants of expressions (training data)
@@ -598,19 +586,7 @@ def train(
                     print(f"""Best Expression: {best_str}""")
                 break
 
-            # #### optimize the best one loop
-            # best_list = []
-            # best_list.append(Expression(operators, best_seq.long().tolist(), best_seq_l.long().tolist()).to(device))
-            # # print('best_expression_2', best_list[0])
-            # optimize_constants(best_list, X_constants, y_constants, inner_lr, inner_num_epochs, inner_optimizer)
-            # reward_2 = benchmark(best_list[0], X_rnn, y_rnn)
-            # # print('best_list',best_list[0])
-            # print('rewards_2',reward_2)
-
             #### optimize the best one loop
-
-            # print('best_seq-1',best_seq)
-            # print('best_seq_l',best_seq_l)
             best_list = []
             best_list.append(
             Expression(operators, best_seq.long().tolist(), best_seq_l.long().tolist()).to(device)
@@ -713,17 +689,6 @@ def benchmark(expression, X_rnn, y_rnn, SEQ, LEN, Nvar,indx):
                 loss_x = loss_x + reward_nrmse(X_pred, X_rnn[:, 0])
 
         rew = reward_nrmse(y_pred, y_rnn) + C * loss_x
-        # X1_pred = torch.zeros(len(X_rnn[:,0]))
-        # X2_pred = torch.zeros(len(X_rnn[:,1]))
-        #
-        # if 6 in SEQ[0: LEN]:
-        #     X1_pred = torch.tensor(X_rnn[:,0])
-        # if 7 in SEQ[0: LEN]:
-        #     X2_pred = torch.tensor(X_rnn[:,1])
-        # # print('X2_pred', X2_pred)
-        # # print('X_rnn[:,1]', X_rnn[:,1])
-        # # print('reward_nrmse(X2_pred,X_rnn[:,0])',reward_nrmse(X2_pred,X_rnn[:,1]))
-        # rew = reward_nrmse(y_pred, y_rnn) + C * reward_nrmse(X1_pred,X_rnn[:,0]) + C * reward_nrmse(X2_pred,X_rnn[:,1])
         return 1/(1+rew)
 
 def reward_nrmse(y_pred, y_rnn):
