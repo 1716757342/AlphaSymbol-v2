@@ -47,10 +47,10 @@ def generateDataFast(eq, n_points, n_vars, decimals, min_x, max_x,
     while p < n_points:
         X_dict = {}
         temp = []
-        # 采样一组点
+        # Sample a set of points
         X = np.round(np.random.uniform(min_x, max_x, n_vars), decimals=decimals)
 
-        # 将点与自变量进行map
+        # map points with arguments
         for x in total_variabels:
             if x in eq:
                 X_dict.update({x: X[eval(x[-1]) - 1]})
@@ -64,18 +64,19 @@ def generateDataFast(eq, n_points, n_vars, decimals, min_x, max_x,
         except:
             return [], []
 
-        # 若超过10秒还算不出正确的y值，说明表达式大概率无意义，直接返回空列表，重新生成新的表达式
+        # If the correct y value cannot be calculated within 10 seconds, it indicates that the expression has a high probability of being meaningless. The empty list is directly returned and a new expression is generated
         time_cost = time.time() - start_time
         if time_cost > 2.5:
             return [], []
 
-        # 若有NaN或inf就重新计算
+        # If there is a NaN or inf, recalculate
         if np.isnan(y) or np.isinf(y):
-            # print('y值计算错误，重新采样计算...')
+            # print('Error in y value calculation, resampling calculation...')
             continue
 
-        y = float(np.round(y, decimals=decimals))  # 保留小数点后数位并保证是浮点数
-        y = y if abs(y) < 5e4 else np.sign(y) * 5e4  # 将最大的y值限制在阈值范围内
+        y = float(np.round(y, decimals=decimals))  # Keep the decimal places and keep them floating point
+
+        y = y if abs(y) < 5e4 else np.sign(y) * 5e4  # Limit the maximum y value to the threshold range
         y = abs(y) if np.iscomplex(y) else y
 
         p += 1
@@ -143,16 +144,9 @@ def benchmark(expression, X_rnn, y_rnn, reward_type=None, cur_epochs=None):
 
     if reward_type == "MEDL":
         reward_medl = mean_error_description_length(expression, X_rnn, y_rnn)
-        return reward_medl  # medl越小越好，reward要求要越来越大，所以取负
+        return reward_medl  # The smaller the medl, the better, and the bigger and bigger the reward, so it's negative
 
     if reward_type == "Pareto_optimal":
-        # medl = mean_error_description_length(str(expression), X_rnn, y_rnn)
-        # complexity = description_length_complexity(str(expression))
-        # # 近似帕累托最优 -> 寻找Pareto stationary point -> 最小化各目标函数的梯度加权和的二范数，s.t.权重和为1 -> 取负号作为reward使其最大化
-        # w_1 = 0.9
-        # w_2 = 0.1
-        # reward = -(w_1 * medl + w_2 * complexity)
-        # print("Weighted MEDL: ", w_1*medl, "\n", "Weighted Complexity: ", w_2*complexity)
 
         with torch.no_grad():
             y_pred = expression(X_rnn)
@@ -162,7 +156,7 @@ def benchmark(expression, X_rnn, y_rnn, reward_type=None, cur_epochs=None):
             nrmse = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
 
         complexity = description_length_complexity(str(expression))
-        # 动态调整
+        # Dynamic adjustment
         w_1 = 1.0
         w_2 = 1e-5
         reward = 1 / (1 + (w_1 * nrmse + w_2 * 10**(cur_epochs//10) * complexity))  # 每10个epoch, w_2增加10倍
@@ -235,7 +229,7 @@ def mean_error_description_length(expression, X, y):
 
 
 def description_length_complexity(eqn):
-    """计算表达式的DL复杂度，包括常数和符号"""
+    """Computes the DL complexity of an expression, including constants and symbols"""
     expr = parse_expr(eqn)
     is_atomic_number = lambda expr: expr.is_Atom and expr.is_number
     numbers_expr = [subexpression for subexpression in preorder_traversal(expr) if
@@ -243,11 +237,11 @@ def description_length_complexity(eqn):
     complity = 0
     for j in numbers_expr:
         try:
-            complity = complity + get_number_DL_snapped(float(j))  # 计算表达式中常数的DL复杂度
+            complity = complity + get_number_DL_snapped(float(j))  # Calculate the DL complexity of a constant in an expression
         except:
             complity = complity + 1000000
 
-    # 加上符号的复杂度
+    # Plus the complexity of the sign
     n_variables = len(expr.free_symbols)
     n_operations = len(count_ops(expr, visual=True).free_symbols)
     if n_operations != 0 or n_variables != 0:
