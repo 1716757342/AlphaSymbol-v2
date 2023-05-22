@@ -506,7 +506,7 @@ def train(
 
         num_batches = 40 - int(int(i / len(operator_list)) ** 2 )
         num_batches = max(num_batches,4)
-        num_batches = 2
+        num_batches = 4
         print('num_batches', num_batches)
         # initial_batch_size  = 2000 - int(int(i/10)**2)
 
@@ -643,7 +643,7 @@ def train(
             # print(loss_p)
             print('log : ',torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
             # loss = 1 * -1 * lr * (risk_seeking_grad + entropy_grad) + 1 * torch.mean((loss_r - loss_p)**2)
-            loss = 1 * -1 * lr * (entropy_grad) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - lr * (entropy_grad)
+            loss = 1 * -1 * lr * (risk_seeking_grad) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - lr * (entropy_grad)
             loss.requires_grad_(True)
             loss.backward()
             optim.step()
