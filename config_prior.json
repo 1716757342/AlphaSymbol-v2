@@ -1,7 +1,7 @@
 {"prior": {
   "length": {
     "min_": 2,
-    "max_": 40,
+    "max_": 60,
     "on": true
   },
   "repeat": {

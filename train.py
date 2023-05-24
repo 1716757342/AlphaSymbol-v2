@@ -680,7 +680,7 @@ def benchmark(expression, X_rnn, y_rnn, SEQ, LEN, Nvar,indx):
     """
     with torch.no_grad():
         y_pred = expression(X_rnn)
-        C = 0.1
+        C = 0.2
         loss_x = 0.
         for i in range(Nvar):
             X_pred = torch.zeros(len(X_rnn[:, 0]))

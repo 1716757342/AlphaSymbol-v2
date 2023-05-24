@@ -29,7 +29,7 @@ import csv
 #   Variable should be passed in the order that they appear in your data, i.e.
 #   if your input data is structued [[x1, y1] ... [[xn, yn]] with outputs
 #   [z1 ... zn], then var_x should precede var_y.
-
+S = ['*', '+', '-', '/', 'cos', 'sin']
 def main():
     # Load training and test data
     X_constants, X_rnn, y_constants, y_rnn = get_data()
@@ -40,12 +40,13 @@ def main():
         y_constants,
         X_rnn,
         y_rnn,
-        operator_list = ['*','+','-','/','sin','cos','var_x1'],
+        operator_list = S,
+        # operator_list = ['*','+','-','/','sin','cos','var_x1','var_x2','var_x3'],
         # operator_list=['*', '+', 'sin', 'var_x'],
         # operator_list=['*', '+', '-', '/', 'cos', 'sin', 'exp', 'ln', 'sqrt', 'var_x1','c'],
 
         min_length = 2,
-        max_length = 40,
+        max_length = 60,
         type = 'lstm',
         num_layers = 2,
         hidden_size = 250,
@@ -88,12 +89,23 @@ def main():
 def get_data():
     """Constructs data for model (currently x^3 + x^2 + x)
     """
-    X = np.arange(0.0001, 1.1, 0.01) * 1
-    # X = np.random.randn(20) * 2
+    # X = np.arange(0.0001, 1.1, 0.01) * 1
+    X = np.random.randn(20,4) * 1
     # X = (np.random.rand(20) * 2 - 1) * 2
     # X.sort()
-    y = X**5 + X ** 4 + X ** 3 + X**2 + X
-    X = X.reshape(X.shape[0], 1)
+    x1 = X[:,0]
+    x2 = X[:,1]
+    x3 = X[:,2]
+    x4 = X[:,3]
+    # y = x1**4 + x1**3 + x1**2 + x1
+    # y =  x1 ** 4 + x1 ** 3 + x2**2 + x2
+    # y = x1 ** 2 + x2 ** 2 + x3**2 + x4**2
+    # X = X.reshape(X.shape[0], 1)
+    # y = 0.81 + 24.3 * (2 * x1 + 3 * x2**2)/(4 * x3**3 + 5 * x4**4)
+    y = x1**2 + x2**2 + x3**2 + x4**2
+    for j in range(X.shape[1]):
+        S.append('var_x'+str(j+1))
+    print(S)
 
     # Split randomly
     comb = list(zip(X, y))
