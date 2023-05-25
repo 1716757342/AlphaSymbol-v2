@@ -105,7 +105,10 @@ Recovery rate comparison of AlphaSymbol and four baselines on more than ten main
 ![Sample results plot](table1.png)
 
 Figure describes the recovery rate of AlphaSymbol and four other excellent algorithms on all Nguyen benchmarks under different levels of noise.
-![Sample results plot](noise.png)
+
+[//]: # (![Sample results plot]&#40;noise.png&#41;)
+<img src="noise.png" alt="Image" width="50%" height="50%">
+
 
 ## Contributing
 
