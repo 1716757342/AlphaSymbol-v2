@@ -82,9 +82,6 @@ You can download pretrained models here:
 >📋  Give a link to where/how the pretrained models can be downloaded and how they were trained (if applicable).  Alternatively you can have an additional column in your results table with a link to the models.
 
 ## Results
-
-Our model achieves the following performance on :
-
 ### [Image Classification on ImageNet](https://paperswithcode.com/sota/image-classification-on-imagenet)
 
 [//]: # (| Model name         | Top 1 Accuracy  | Top 5 Accuracy |)
@@ -92,10 +89,23 @@ Our model achieves the following performance on :
 [//]: # (| ------------------ |---------------- | -------------- |)
 
 [//]: # (| My awesome model   |     85%         |      95%       |)
+  We evaluated the performance of AlphaSymbol on more than ten classic datasets in the field of symbolic regression. These datasets are labeled Nguyen, Keijzer, Korns, Constant, Livermore, R, Vladislavlev, Jin, Neat, AI Feynman, and Others. The datasets mentioned above collectively contain a total of 222 test expressions.
+We compare AlphaSymbol with four symbol regression algorithms that have demonstrated high performance:
+
+**DSO**. A superior algorithm that effectively integrates reinforcement learning and genetic programming (GP) for symbolic regression tasks. 
+
+**DSR**. An exceptional algorithm that effectively employs deep reinforcement learning in the domain of symbolic regression.
+
+**GP**. A classic algorithm that applies genetic algorithms perfectly to the field of symbolic regression. Greatly improved search efficiency.
+
+**NeSymReS**. This algorithm is categorized as a large-scale pre-training model.
+
+Recovery rate comparison of AlphaSymbol and four baselines on more than ten mainstream symbolic regression datasets.
 
 ![Sample results plot](table1.png)
->📋  Include a table of results from your paper, and link back to the leaderboard for clarity and context. If your main result is a figure, include that figure and link to the command or notebook to reproduce it. 
 
+Figure describes the recovery rate of AlphaSymbol and four other excellent algorithms on all Nguyen benchmarks under different levels of noise.
+![Sample results plot](noise.png)
 
 ## Contributing
 
