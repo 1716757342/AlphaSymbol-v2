@@ -103,7 +103,7 @@ You can download pretrained models here:
 
 Recovery rate comparison of AlphaSymbol and four baselines on more than ten mainstream symbolic regression datasets.
 
-![Sample results plot](table1.png) 
+<img src="table1.png" alt="Image" width="70%" height="60%">
 
 
 Average Coefficient of Determination (R^2) on Various Datasets
