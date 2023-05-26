@@ -108,7 +108,7 @@ Recovery rate comparison of AlphaSymbol and four baselines on more than ten main
 
 Average Coefficient of Determination (R^2) on Various Datasets
 
-<img src="r2.png" alt="Image" width="50%" height="50%">
+<img src="r2.png" alt="Image" width="40%" height="40%">
 
 
 Figure describes the recovery rate of AlphaSymbol and four other excellent algorithms on all Nguyen benchmarks under different levels of noise.
