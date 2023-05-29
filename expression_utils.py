@@ -1,9 +1,6 @@
 ###############################################################################
 # General Information
 ###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
-
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
 
 # expression_utils.py: Contains code for converting sampled sequences to
 # Pytorch expressions. These expressions can then have their reward assessed,

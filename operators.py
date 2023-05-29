@@ -1,9 +1,6 @@
 ###############################################################################
 # General Information
 ###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
-
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
 
 # operators.py: Operator class, which is used as the building blocks for
 # assembling PyTorch expressions with an RNN.
@@ -92,17 +89,16 @@ class Operators:
         self.func_dict = dict(self.function_mapping)
         self.var_dict = {var: i for i, var in enumerate(self.var_operators)}
 
-        # 自定义三角函数和对指数约束mask
+        # Define the constraint mask for trigonometric functions and logarithms
         self.non_sin_cos_mask = torch.Tensor(
-            [0 if i in ['sin', 'cos'] else 1 for i in self.operator_list])  # sin cos的位置为0其他位置为1
+            [0 if i in ['sin', 'cos'] else 1 for i in self.operator_list])
         self.non_exp_ln_mask = torch.Tensor(
-            [0 if i in ['ln', 'exp'] else 1 for i in self.operator_list])  # log exp的位置为0其他位置为1
+            [0 if i in ['ln', 'exp'] else 1 for i in self.operator_list])
         self.cos_sin_index = torch.Tensor(
             [i for i in range(len(self.operator_list)) if self.operator_list[i] in ['sin', 'cos']])
         self.exp_ln_index = torch.Tensor(
             [i for i in range(len(self.operator_list)) if self.operator_list[i] in ['exp', 'ln']])
 
-        ######################################### 参考DSR添加约束需要用到的变量 ########################################
         self.arities = np.array([self.arity_dict[token] for token in self.operator_list], dtype=np.int32)
         self.parent_adjust = np.full_like(self.arities, -1)
         count = 0
@@ -120,7 +116,6 @@ class Operators:
         self.EMPTY_PARENT = self.n_parent_inputs - 1
         self.EMPTY_SIBLING = self.n_sibling_inputs - 1
 
-        # 相反约束需要用到的变量
         inverse_tokens = {
             "inv": "inv",
             "neg": "neg",
@@ -133,19 +128,19 @@ class Operators:
         self.inverse_tokens = {token_from_name[k]: token_from_name[v] for k, v in inverse_tokens.items() if
                                k in token_from_name and v in token_from_name}
 
-        # 三角函数嵌套需要用到的变量
+        # Trig function nesting constraint
         trig_names = ["sin", "cos"]
         self.trig_tokens = np.array([i for i, t in enumerate(self.operator_list) if t in trig_names], dtype=np.int32)
         self.binary_tokens = self.arity_two
         self.unary_tokens = self.arity_one
 
-        # 常数个数约束需要用到的变量
+        # Constant number constraint
         try:
             self.const_token = self.operator_list.index("c")
         except ValueError:
             self.const_token = None
 
-        # 至少有一个自变量的约束需要用到的变量, 以后debug可以重点关注这里，可能会出错
+        # There is at least one constraint on the argument
         self.float_tokens = np.array(
             [i for i, f in enumerate(self.operator_list) if f.replace('.', '').strip('-').isnumeric()])  # 小数
         if self.const_token is not None:
