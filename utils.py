@@ -31,7 +31,7 @@ def seed_everything(seed_value):
 def generateDataFast(eq, n_points, n_vars, decimals, min_x, max_x,
                      total_variabels=['x_1', 'x_2', 'x_3', 'x_4', 'x_5', 'x_6', 'x_7', 'x_8', 'x_9']):
     '''
-    逐点计算
+    Point-by-point calculation
     :param eq: expression str with consts
     :param n_points: number of points
     :param min_x: min x

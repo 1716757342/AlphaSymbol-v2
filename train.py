@@ -558,7 +558,6 @@ def train(
 
             rewards = torch.tensor(best_reward)
 
-
             # Update best expression
 
             best_epoch_expression = expressions[np.argmax(rewards)]
@@ -620,7 +619,6 @@ def train(
             if (len(indices_to_keep) == 0 and summary_print):
                 print("Threshold removes all expressions. Terminating.")
                 break
-                # continue
             # Select corresponding subset of rewards, log_probabilities, and entropies
             rewards = torch.index_select(rewards, 0, indices_to_keep)
             log_probabilities = torch.index_select(log_probabilities, 0, indices_to_keep)
@@ -653,14 +651,11 @@ def train(
             sequences, sequence_lengths, log_probabilities, entropies = dsr_rnn.sample_n_expressions(batch_size,MT_node,MT_cou,operator_list)  ##initial_batch_size ：The number of sampled expression.
 
         backup(expend_node, batch_best / 1)
-        # batch_best = -np.inf
         if (summary_print):
             print(f"""
-            Time Elapsed: {round(float(time.time() - start), 2)}
-            Epochs Required: {i+1}
-            Best Performance: {round(best_performance.item(),4)}
+            Time (S) : {round(float(time.time() - start), 2)}
+            Best reward: {round(best_performance.item(),4)}
             Best Expression: {best_expression}
-            Target Expression:{'  y =  greenhouse '}
             """)
         if (best_performance >= 0.9999):
             best_str = str(best_expression)
@@ -692,26 +687,8 @@ def benchmark(expression, X_rnn, y_rnn, SEQ, LEN, Nvar,indx):
         return 1/(1+rew)
 
 def reward_nrmse(y_pred, y_rnn):
-    """Compute NRMSE between predicted y and actual y
+    """Compute S_NRMSE between predicted points and actual points
     # """
-    # loss = nn.MSELoss()
-    # val = torch.sqrt(loss(y_pred, y_rnn)) # Convert to RMSE
-    # val = torch.std(y_rnn) * val # Normalize using stdev of targets
-    # # print('val',val)
-    # val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10)) # Fix nan and clip
-    # val = 1 / (1 + val) # Squash
-    # # val = np.tanh(val)
-    # return val.item()
-
-    # loss = nn.MSELoss()
-    # val = loss(y_pred, y_rnn) # Convert to RMSE
-    # val = torch.std(y_rnn) * val  # Normalize using stdev of targets
-    # val =torch.sqrt(val)
-    # # print('val',val)
-    # val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
-    # val = 1 / (1 + val)  # Squash
-    # # val = np.tanh(val)
-    # return val.item()
 
     #### S_NRMSE
     loss = nn.MSELoss()
@@ -720,24 +697,5 @@ def reward_nrmse(y_pred, y_rnn):
     val = torch.sqrt(val)
     # print('val',val)
     val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
-
-    # val = 1 / (1 + val)  # Squash
-    # val = np.tanh(val)
     return val.item()
     #####endendend#####
-    #
-    # loss = (y_pred - y_rnn)**2
-    # # Min-Max scaling
-    # min_a = torch.min(loss)
-    # max_a = torch.max(loss)
-    # loss =100 *  (loss - min_a) / (max_a - min_a)
-    # val = torch.sqrt(torch.mean(loss))  # Convert to RMSE
-    # # val = torch.std(y_rnn) * val  # Normalize using stdev of targets
-    # val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
-    # val = 1 / (1 + val)  # Squash
-    # return val.item()
-
-    # val = torch.relu(1 - (torch.mean((y_pred - y_rnn) ** 2)/torch.mean((y_rnn - torch.mean(y_rnn))**2)))
-    # print('val',val)
-    # val = min(torch.nan_to_num(val, nan=-0.), torch.tensor(-0.))  # Fix nan and clip
-    # return val.item()

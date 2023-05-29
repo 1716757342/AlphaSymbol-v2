@@ -56,6 +56,9 @@ results = train(
         config_prior='./config_prior.json'
     )
 ```
+In the config_prior.py file, select the restrictions to apply during the search (true or false).
+(Note that the maximum and minimum length restrictions in config_prior.py are the same as those in main.py.)
+
 Getting started
 ```train
 python main.py 

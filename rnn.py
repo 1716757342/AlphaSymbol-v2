@@ -1,9 +1,6 @@
 ###############################################################################
 # General Information
 ###############################################################################
-# Author: Daniel DiPietro | dandipietro.com | https://github.com/dandip
-
-# Original Paper: https://arxiv.org/abs/1912.04871 (Petersen et al)
 
 # rnn.py: Houses the RNN model used to sample expressions. Supports batched
 # sampling of variable length sequences. Can select RNN, LSTM, or GRU models.
@@ -168,9 +165,9 @@ class DSRRNN(nn.Module):
                 output, hidden_tensor = self.forward(input_tensor, hidden_tensor)
 
 
-            output = output + prior  # 将违反约束的token概率置-inf
-            output = torch.where(torch.isinf(output), torch.full_like(output, 0), output)  # 将-inf替换为0
-            output = output / torch.sum(output, axis=1)[:, None]  # 概率重新归一化
+            output = output + prior  # Set the token probability of the constraint violation to -inf
+            output = torch.where(torch.isinf(output), torch.full_like(output, 0), output)
+            output = output / torch.sum(output, axis=1)[:, None]
 
             dist = torch.distributions.Categorical(output)
             token = dist.sample()  # [batch_size]
@@ -179,18 +176,18 @@ class DSRRNN(nn.Module):
             lengths += 1
 
             # Add log probability of current token
-            log_probs = torch.cat((log_probs, dist.log_prob(token)[:, None]), axis=1)  # dist.log_prob计算对应token的ln值
+            log_probs = torch.cat((log_probs, dist.log_prob(token)[:, None]), axis=1)
 
             # Add entropy of current token
-            entropies = torch.cat((entropies, dist.entropy()[:, None]), axis=1)  # 计算token的熵值, 每个token：概率分布分别计算 -p*lnp
+            entropies = torch.cat((entropies, dist.entropy()[:, None]), axis=1)  # token entropy is calculated. For each token: probability distribution, -p*lnp is calculated separately
 
             # Update counter
             counters -= 1
-            counters += torch.isin(token, self.operators.arity_two).long() * 2  # 判断token中的元素是否在arity中，在返回True不在返回False, 返回的形状和token相同
+            counters += torch.isin(token, self.operators.arity_two).long() * 2
             counters += torch.isin(token, self.operators.arity_one).long() * 1
 
             sequence_mask = torch.cat((sequence_mask, torch.bitwise_and((counters > 0)[:, None], sequence_mask.all(dim=1)[:, None])),
-                                      axis=1)  # 输入是布尔类型计算逻辑与
+                                      axis=1)
 
             # Compute next parent and sibling; assemble next input tensor
             next_obs, next_prior = self.get_next_obs(sequences, obs)
@@ -201,13 +198,7 @@ class DSRRNN(nn.Module):
             prior = next_prior
             obs = next_obs
 
-        # Filter entropies log probabilities using the sequence_mask
-        # 新添加熵的decay
-        # self.entropy_gamma_decay_mask = self.entropy_gamma_decay[:len(sequence_mask)] * (sequence_mask[:, :-1].long())
-        # entropies = torch.sum(entropies * self.entropy_gamma_decay_mask, axis=1)
-        # print('entropies',entropies.size())
-        # print('sequence_mask', sequence_mask[:, :-1].long())
-        entropies = torch.sum(entropies[:,len(mt_node)-1:-1] * (sequence_mask[:, :-1][:,len(mt_node)-1:-1]).long(), axis=1)  # 完整表达式的熵
+        entropies = torch.sum(entropies[:,len(mt_node)-1:-1] * (sequence_mask[:, :-1][:,len(mt_node)-1:-1]).long(), axis=1)
         log_probs = torch.sum(log_probs[:,len(mt_node)-1:-1] * (sequence_mask[:, :-1][:,len(mt_node)-1:-1]).long(), axis=1)
         # print('entropies',len(entropies))
         sequence_lengths = torch.sum(sequence_mask.long(), axis=1)
@@ -229,10 +220,6 @@ class DSRRNN(nn.Module):
         lengths = torch.zeros(n) # Number of tokens currently in expression
 
         # While there are still tokens left for sequences in the batch
-        """
-        any对矩阵操作时，any（a，dim），dim=0表示对列操作，列向量非全0返回真，返回行向量；dim=1表示对行操作，行向量非全0返回真，返回列向量；
-　　     all对矩阵操作时，all（a，dim），dim=0表示对列操作，列向量所有元素非0返回真，返回行向量；dim=1表示对行操作，行向量所有元素非0返回真，返回列向量；
-        """
         while(sequence_mask.all(dim=1).any()):
             if (self.type == 'rnn'):
                 output, hidden_tensor = self.forward(input_tensor, hidden_tensor)
@@ -432,7 +419,7 @@ class DSRRNN(nn.Module):
         return input_tensor
 
     def get_tensor_input(self, obs):
-        """获取RNN的输入：parent||sibling, obs: [action, parent, sibling, dangling]"""
+        """Get the input of the RNN : parent||sibling, obs: [action, parent, sibling, dangling]"""
         parent = torch.abs(obs[:, 1]).long()  # [batch_size]
         sibling = torch.abs(obs[:, 2]).long()  # [batch_size]
 
@@ -450,7 +437,6 @@ class DSRRNN(nn.Module):
         return input_tensor
 
     def get_next_obs(self, actions, obs):
-        # 为了get_next_obs使用numba加速，需要先把tensor转换成ndarray
         actions = actions.numpy().astype(np.int32)
         obs = obs.numpy().astype(np.int32)
 

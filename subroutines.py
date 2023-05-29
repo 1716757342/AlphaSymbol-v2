@@ -1,4 +1,4 @@
-"""Numba-compiled subroutines used for deep symbolic optimization."""
+"""Numba-compiled subroutines used for AlphaSymbol."""
 
 # from numba import jit, prange
 import numpy as np
@@ -66,8 +66,6 @@ def parents_siblings(tokens, arities, parent_adjust, empty_parent, empty_sibling
                 break
     return adj_parents, siblings
 
-
-# @jit(nopython=True, parallel=False)
 def jit_parents_siblings_at_once(tokens, arities, parent_adjust):
     """
     Given a batch of action sequences, computes and returns the parents and
@@ -82,9 +80,6 @@ def jit_parents_siblings_at_once(tokens, arities, parent_adjust):
     already be complete; in these cases, this function sees the start of a new
     expression, even though the return value for these elements won't matter
     because their gradients will be zero because of sequence_length.
-    
-    >>> This has been tested and gives the same answer as the regular parent_sibling class for
-        DEAP functions. 
 
     Parameters
     __________
@@ -144,8 +139,6 @@ def jit_parents_siblings_at_once(tokens, arities, parent_adjust):
                
     return adj_parents, siblings
 
-
-# @jit(nopython=True, parallel=True)
 def ancestors(actions, arities, ancestor_tokens):
     """
     Given a batch of action sequences, determines whether the next element of
@@ -202,8 +195,6 @@ def ancestors(actions, arities, ancestor_tokens):
             mask[r] = True
     return mask
 
-
-# @jit(nopython=True, parallel=True)
 def get_position(actions, arities, n_objects=1):
     """
     Given a batch of action trajectories and action arities, 
@@ -253,8 +244,6 @@ def get_position(actions, arities, n_objects=1):
                 
     return positions, position_last_object_ended
 
-
-# @jit(nopython=True, parallel=True)
 def get_mask(pos, depth):
     """
     Given a batch of positions where the last object ended and a depth which is the current total
@@ -287,8 +276,6 @@ def get_mask(pos, depth):
             mask[i, j] = 0
     return mask
 
-
-# @jit(nopython=True, parallel=False)
 def jit_check_constraint_violation(actions, actions_tokens, other, other_tokens):
     r"""
     Given an action sequence, another type of sequences such as siblings 
@@ -301,9 +288,7 @@ def jit_check_constraint_violation(actions, actions_tokens, other, other_tokens)
     
         np.any(np.logical_and(np.isin(actions, actions_tokens), np.isin(other, other_tokens)))
     
-    but is much faster because it can quit when a single constraint is violated. 
-    
-    >>> This has been tested against the old inverse token constraint and gives the same answer.
+    but is much faster because it can quit when a single constraint is violated.
 
     Parameters
     __________
@@ -347,7 +332,6 @@ def jit_check_constraint_violation(actions, actions_tokens, other, other_tokens)
     return False
 
 
-# @jit(nopython=True, parallel=False)
 def jit_check_constraint_violation_uchild(actions, parent, sibling, actions_tokens, 
                                           adj_unary_effectors, adj_effectors):
     r"""
@@ -538,7 +522,6 @@ def jit_check_constraint_violation_descendant_no_target_tokens(\
                 
     return False  
 
-# @jit(nopython=True, parallel=False)
 def jit_check_constraint_violation_descendant_with_target_tokens(\
         actions, target_tokens, effector_tokens, binary_tokens, unary_tokens):
 
