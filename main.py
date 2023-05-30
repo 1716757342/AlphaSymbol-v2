@@ -43,7 +43,7 @@ def main():
         operator_list = S,
         # operator_list = ['*','+','-','/','sin','cos','var_x1'],
         min_length = 2,
-        max_length = 20,
+        max_length = 40,
         type = 'lstm',
         num_layers = 2,
         hidden_size = 250,

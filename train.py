@@ -609,15 +609,15 @@ def train(
                     print("~ Early Stopping Met ~")
                     print(f"""Best Expression: {best_str}""")
                 break
-           # Compute risk threshold
+           # Compute v
             if (i == 0 and scale_initial_risk):
-                threshold = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
+                v = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
             else:
-                threshold = np.quantile(rewards, risk_factor)
-            indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] > threshold])
+                v = np.quantile(rewards, risk_factor)
+            indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] > v])
 
             if (len(indices_to_keep) == 0 and summary_print):
-                print("Threshold removes all expressions. Terminating.")
+                print("v removes all expressions. Terminating.")
                 break
             # Select corresponding subset of rewards, log_probabilities, and entropies
             rewards = torch.index_select(rewards, 0, indices_to_keep)
@@ -625,23 +625,23 @@ def train(
             entropies = torch.index_select(entropies, 0, indices_to_keep)
 
             # Compute risk seeking and entropy gradient
-            risk_seeking_grad = torch.sum((rewards - threshold) * log_probabilities, axis=0)
+            l_zv = torch.sum((rewards - v) * log_probabilities, axis=0)
             entropy_grad = torch.sum(entropies, axis=0)
 
             # Mean reduction and clip to limit exploding gradients
-            risk_seeking_grad = torch.clip(risk_seeking_grad / len(rewards), -1e6, 1e6)
+            l_zv = torch.clip(l_zv / len(rewards), -1e6, 1e6)
             entropy_grad = entropy_coefficient * torch.clip(entropy_grad / len(rewards), -1e6, 1e6)
 
             #Compute loss and backpropagate
-            # loss = 1 * -1 * lr * (risk_seeking_grad + entropy_grad) + 1 * np.sum((loss_pred_p - loss_real_pi)**2)/len(operator_list)
+            # loss = 1 * -1 * lr * (l_zv + entropy_grad) + 1 * np.sum((loss_pred_p - loss_real_pi)**2)/len(operator_list)
             # print(loss_real_pi)  #.detach().numpy()
             loss_r = torch.tensor(loss_real_pi[0])
             loss_p = torch.tensor(loss_pred_p[0])
             # print(loss_r)
             # print(loss_p)
             print('log : ',torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
-            # loss = 1 * -1 * lr * (risk_seeking_grad + entropy_grad) + 1 * torch.mean((loss_r - loss_p)**2)
-            loss = 1 * -1 * lr * (risk_seeking_grad) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - lr * (entropy_grad)
+            # loss = 1 * -1 * lr * (l_zv + entropy_grad) + 1 * torch.mean((loss_r - loss_p)**2)
+            loss = 0 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 0 * lr * (entropy_grad)
             loss.requires_grad_(True)
             loss.backward()
             optim.step()
