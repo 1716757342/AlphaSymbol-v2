@@ -47,7 +47,6 @@ results = train(
         entropy_coefficient = 0.005,
         risk_factor = 0.95,
         initial_batch_size = 1000,
-        scale_initial_risk = True,
         batch_size = 1000,
         num_batches = 10000,
         use_gpu = False,

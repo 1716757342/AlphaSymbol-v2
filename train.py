@@ -40,7 +40,6 @@ def train(
         entropy_coefficient = 0.005,
         risk_factor = 0.95,
         initial_batch_size = 500, ##2000
-        scale_initial_risk = True,
         batch_size = 500,
         num_batches = 200,
         hidden_size = 500,
@@ -237,7 +236,7 @@ def train(
                 # else:
                 #     right = 4/len(operator_list) * np.sqrt(1) / (1 * sub_node.get_visit_times())
 
-                right = 2.0 * 1 / (0.00001 + 4 * sub_node.get_visit_times())
+                right = 2.0 * 1 / (1 + 4 * sub_node.get_visit_times())
             # else:
             #     right = 2.0 * np.sqrt(math.log(node.get_visit_times()) / (sub_node.get_visit_times()+0.0000001))
 
@@ -247,7 +246,8 @@ def train(
                 best_score = score
                 best_sub_node = sub_node
         return best_sub_node
-    def expand(node):  # Gets the unextended child node
+    def expand(node):  # Gets the unextended
+        # node
         for i in range(len(operator_list)):
             tried_sub_node_states = [sub_node.get_state() for sub_node in node.get_children()]
             # print('tried_sub_node_states',tried_sub_node_states)
@@ -375,14 +375,14 @@ def train(
         vn = []
         all_children = rnode.get_children()
         if all_children != []:
-            print('child'*20)
+            # print('child'*20)
             for child in all_children:
                 vn.append(child.get_visit_times())
-            print('vn',vn)
+            # print('vn',vn)
         vn = np.array(vn)
         # if np.sum(vn) >= 2 * len(operator_list):
         if np.sum(vn) >= 2:
-            print('vn'*20)
+            # print('vn'*20)
             rpi.append(softmax(vn, 1))
             pp.append(PP)
     st = 0
@@ -474,8 +474,8 @@ def train(
                 # print('x' * 100)
                 expend_node = expand(expend_node)  ##如果没有扩展完
 
-        print('real_pi',real_pi)
-        print('pred_p',pred_p)
+        # print('real_pi',real_pi)
+        # print('pred_p',pred_p)
         loss_real_pi = np.array(real_pi)
         loss_pred_p = np.array(pred_p)
         if st%20 == 0:
@@ -502,12 +502,12 @@ def train(
         initial_batch_size = min(initial_batch_size,1000)
         initial_batch_size = 200
         batch_size = initial_batch_size
-        print('initial_batch_size', initial_batch_size)
+        # print('initial_batch_size', initial_batch_size)
 
         num_batches = 40 - int(int(i / len(operator_list)) ** 2 )
         num_batches = max(num_batches,4)
         num_batches = 4
-        print('num_batches', num_batches)
+        # print('num_batches', num_batches)
         # initial_batch_size  = 2000 - int(int(i/10)**2)
 
         sequences, sequence_lengths, log_probabilities, entropies = dsr_rnn.sample_n_expressions(initial_batch_size,MT_node,MT_cou,operator_list)  ##initial_batch_size ：The number of sampled expression.
@@ -610,7 +610,7 @@ def train(
                     print(f"""Best Expression: {best_str}""")
                 break
            # Compute v
-            if (i == 0 and scale_initial_risk):
+            if (i == 0):
                 v = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
             else:
                 v = np.quantile(rewards, risk_factor)
@@ -641,7 +641,7 @@ def train(
             # print(loss_p)
             print('log : ',torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
             # loss = 1 * -1 * lr * (l_zv + entropy_grad) + 1 * torch.mean((loss_r - loss_p)**2)
-            loss = 0 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 0 * lr * (entropy_grad)
+            loss = 1 * -1 * lr * (l_zv) + 0 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
             loss.requires_grad_(True)
             loss.backward()
             optim.step()

@@ -45,7 +45,7 @@ def main():
         min_length = 2,
         max_length = 40,
         type = 'lstm',
-        num_layers = 2,
+        num_layers = 5,
         hidden_size = 250,
         dropout = 0.0,
         lr = 0.0005,
@@ -56,7 +56,6 @@ def main():
         entropy_coefficient = 0.005,
         risk_factor = 0.95,
         initial_batch_size = 1000,
-        scale_initial_risk = True,
         batch_size = 1000,
         num_batches = 10000,
         use_gpu = False,
@@ -91,7 +90,7 @@ def get_data():
     # X = (np.random.rand(20) * 2 - 1) * 2
     # X.sort()
     x1 = X[:,0]
-    y = x1**3 + x1**2 + x1
+    y = x1**4 + x1**3 + x1**2 + x1
 
     for j in range(X.shape[1]):
         S.append('var_x'+str(j+1))
