@@ -1,6 +1,39 @@
 
-# Discovering mathematical formulas from data via LSTM-guided Monte Carlo Tree Search
-<img src="AlphaSymbol8.png" alt="Image" width="90%" height="90%">
+[//]: # (# Discovering mathematical formulas from data via LSTM-guided Monte Carlo Tree Search)
+<h1 align="center">Discovering mathematical formulas from data via LSTM-guided Monte Carlo Tree Search
+</h1>
+<h2 align="center">
+
+[![Mentioned in Awesome Vue.js](https://awesome.re/mentioned-badge.svg)](https://anonymous.4open.science/r/AlphaSymbol-v2)
+
+[//]: # ([![Download my paper Vue.js]&#40;https://img.shields.io/badge/vue-2.2.4-green.svg&#41;]&#40;https://github.com/vuejs/awesome-vue&#41;)
+
+
+</h2>
+
+<p align="center">
+<img src="https://img.shields.io/badge/Symbolic-Regression-brightgreen" >
+<img src="https://img.shields.io/badge/Download%20-AlphaSymbol-yellow">
+<img src="https://img.shields.io/badge/Watching-0-green">
+
+[//]: # (<img src="https://img.shields.io/badge/vue-2.2.4-green.svg">)
+
+<img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103" >
+
+[//]: # (<img src="https://beerpay.io/silent-lad/VueSolitaire/badge.svg?style=flat">)
+
+<img src="https://img.shields.io/badge/Start-0-blue">
+
+<img src="https://img.shields.io/badge/Python-100%25-green">
+
+<img src="https://img.shields.io/badge/forks-0-yellow">
+
+[//]: # (<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">)
+</p>
+
+<img src="AlphaSymbol8.png" alt="Image" width="100%" height="100%">
+
+
 
 
 This repository is the official implementation of [My Paper Title](https://arxiv.org/abs/2030.12345). 
@@ -26,7 +59,7 @@ pip install -r requirements.txt # To install all the required dependencies.
 ## Discovering Formulas
 
 (1), Setting the appropriate parameters in the `main.py`  file
-```train
+```js
 results = train(
         X_constants,
         y_constants,
@@ -71,13 +104,13 @@ python main.py
   We evaluated the performance of AlphaSymbol on more than ten classic datasets in the field of symbolic regression. These datasets are labeled **Nguyen, Keijzer, Korns, Constant, Livermore, R, Vladislavlev, Jin, Neat, AI Feynman, and Others**. The datasets mentioned above collectively contain a total of 222 test expressions.
 We compare AlphaSymbol with four symbol regression algorithms that have demonstrated high performance:
 
-**DSO**. A superior algorithm that effectively integrates reinforcement learning and genetic programming (GP) for symbolic regression tasks. 
+- **DSO**. A superior algorithm that effectively integrates reinforcement learning and genetic programming (GP) for symbolic regression tasks. 
 
-**DSR**. An exceptional algorithm that effectively employs deep reinforcement learning in the domain of symbolic regression.
+- **DSR**. An exceptional algorithm that effectively employs deep reinforcement learning in the domain of symbolic regression.
 
-**GP**. A classic algorithm that applies genetic algorithms perfectly to the field of symbolic regression. Greatly improved search efficiency.
+- **GP**. A classic algorithm that applies genetic algorithms perfectly to the field of symbolic regression. Greatly improved search efficiency.
 
-**NeSymReS**. This algorithm is categorized as a large-scale pre-training model.
+- **NeSymReS**. This algorithm is categorized as a large-scale pre-training model.
 
 The Pythagorean theorem is $a^2 + b^2 = c^2.$
 
