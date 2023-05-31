@@ -30,9 +30,9 @@
 
 [//]: # (<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">)
 </p>
-
-<img src="AlphaSymbol8.png" alt="Image" width="100%" height="100%">
-
+<div align=center>
+<img src="AlphaSymbol8.png" alt="Image" width="80%" height="100%">
+</div>
 
 
 
