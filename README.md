@@ -1,30 +1,31 @@
 
 # Discovering mathematical formulas from data via LSTM-guided Monte Carlo Tree Search
 <img src="AlphaSymbol8.png" alt="Image" width="90%" height="90%">
+
+
 This repository is the official implementation of [My Paper Title](https://arxiv.org/abs/2030.12345). 
 
->📋  Optional: include a graphic explaining your approach/main result, bibtex entry, link to demos, blog posts and tutorials
 
 ## Requirements
 
-1,Create a Python 3.7 virtual environment
+(1),Create a Python 3.7 virtual environment
 ```setup
 conda create -n venv python=3.7 # Create a Python 3.7 virtual environment
 ```
-2,To activate the newly created environment, use the following command:
+(2),To activate the newly created environment, use the following command:
 ```setup
 source activate venv  # activate the newly created environment
 ```
-3,To install requirements:
+(3),To install requirements:
 ```setup
 pip install -r requirements.txt # To install all the required dependencies. 
 ```
 
->📋  Describe how to set up the environment, e.g. pip/conda/docker commands, download datasets, etc...
+[//]: # (>📋  Describe how to set up the environment, e.g. pip/conda/docker commands, download datasets, etc...)
 
-## Training
+## Discovering Formulas
 
-Setting the appropriate parameters in the main.py file
+(1), Setting the appropriate parameters in the `main.py`  file
 ```train
 results = train(
         X_constants,
@@ -36,8 +37,8 @@ results = train(
         min_length = 2,
         max_length = 60,
         type = 'lstm',
-        num_layers = 2,
-        hidden_size = 250,
+        num_layers = 4,
+        hidden_size = 500,
         dropout = 0.0,
         lr = 0.0005,
         optimizer = 'adam',
@@ -55,10 +56,10 @@ results = train(
         config_prior='./config_prior.json'
     )
 ```
-In the config_prior.py file, select the restrictions to apply during the search (true or false).
-(Note that the maximum and minimum length restrictions in config_prior.py are the same as those in main.py.)
+(2), In the `config_prior.py` file, select the restrictions to apply during the search (true or false).
+(Note that the maximum and minimum length restrictions in `config_prior.py` are the same as those in main.py.)
 
-Getting started
+(3), Getting started
 ```train
 python main.py 
 ```
@@ -67,7 +68,7 @@ python main.py
 > 在main.py文件里面指定算法的各种参数，然后指定对应的X和Y，
 ## Evaluation
 
-  We evaluated the performance of AlphaSymbol on more than ten classic datasets in the field of symbolic regression. These datasets are labeled Nguyen, Keijzer, Korns, Constant, Livermore, R, Vladislavlev, Jin, Neat, AI Feynman, and Others. The datasets mentioned above collectively contain a total of 222 test expressions.
+  We evaluated the performance of AlphaSymbol on more than ten classic datasets in the field of symbolic regression. These datasets are labeled **Nguyen, Keijzer, Korns, Constant, Livermore, R, Vladislavlev, Jin, Neat, AI Feynman, and Others**. The datasets mentioned above collectively contain a total of 222 test expressions.
 We compare AlphaSymbol with four symbol regression algorithms that have demonstrated high performance:
 
 **DSO**. A superior algorithm that effectively integrates reinforcement learning and genetic programming (GP) for symbolic regression tasks. 
@@ -92,7 +93,8 @@ You can download pretrained models here:
 - [My awesome model](https://drive.google.com/mymodel.pth) trained on ImageNet using parameters x,y,z. 
 
 ## Results
-### [Image Classification on ImageNet](https://paperswithcode.com/sota/image-classification-on-imagenet)
+
+[//]: # (### [Image Classification on ImageNet]&#40;https://paperswithcode.com/sota/image-classification-on-imagenet&#41;)
 
 [//]: # (| Model name         | Top 1 Accuracy  | Top 5 Accuracy |)
 
@@ -110,7 +112,7 @@ Average Coefficient of Determination (R^2) on Various Datasets
 <img src="r2.png" alt="Image" width="20%" height="20%">
 
 
-Figure describes the recovery rate of AlphaSymbol and four other excellent algorithms on all Nguyen benchmarks under different levels of noise.
+This figure describes the recovery rate of AlphaSymbol and four other excellent algorithms on all Nguyen benchmarks under different levels of noise.
 
 [//]: # (![Sample results plot]&#40;noise.png&#41;)
 <img src="noise.png" alt="Image" width="60%" height="60%">

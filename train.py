@@ -86,9 +86,6 @@ def train(
     AVAILABLE_CHOICES = operator_list
     # AVAILABLE_CHOICES = ['*', '+', 'sin', 'var_x']
     AVAILABLE_CHOICE_NUMBER = len(AVAILABLE_CHOICES)
-    MAX_ROUND_NUMBER = 30
-
-    # ind = 6
 
     class Node(object):
         def __init__(self):
@@ -221,8 +218,6 @@ def train(
         for k in range(len(operator_list)):
             # print('k',int(k))
             sub_node = node.get_children()[k]
-            # print('sub_node',sub_node.get_state().cumulative_choices)
-            # print('sub_node_visit', sub_node.get_visit_times())
             if is_exploration:
                 C = 1 / math.sqrt(2.0) * 2
             else:
@@ -236,7 +231,7 @@ def train(
                 # else:
                 #     right = 4/len(operator_list) * np.sqrt(1) / (1 * sub_node.get_visit_times())
 
-                right = 2.0 * 1 / (1 + 4 * sub_node.get_visit_times())
+                right = 2.0 * 1 / (1 + 1 * sub_node.get_visit_times())
             # else:
             #     right = 2.0 * np.sqrt(math.log(node.get_visit_times()) / (sub_node.get_visit_times()+0.0000001))
 
@@ -269,46 +264,6 @@ def train(
             # node.set_quality_value(reward)
             node = node.parent  ##Recursion
 
-    def farward_best(l2, X, X2, d):
-        global index_c
-        index_c = 0
-
-        stack1 = []
-        for i in range(len(l2)):
-            # print(l2)
-            s = l2[-(i + 1)]
-            if s == 'var_x1':
-                stack1.append(X)
-            if s == 'var_x2':
-                stack1.append(X2)
-            if s == 'c':
-                stack1.append(d[index_c])
-                index_c = index_c + 1
-            if s in ['sin', 'cos', 'log', 'exp', 'sqrt']:
-                if s == 'exp':
-                    v1 = np.exp(stack1.pop())
-                if s == 'ln':
-                    v1 = np.log(stack1.pop())
-                if s == 'cos':
-                    v1 = np.cos(stack1.pop())
-                if s == 'sin':
-                    v1 = np.sin(stack1.pop())
-                if s == 'sqrt':
-                    v1 = np.sqrt(stack1.pop())
-                stack1.append(v1)
-            if s in ['+', '-', '*', '/']:
-                if s == '+':
-                    v1 = stack1.pop() + stack1.pop()
-                if s == '-':
-                    v1 = stack1.pop() - stack1.pop()
-                if s == '*':
-                    v1 = stack1.pop() * stack1.pop()
-                if s == '/':
-                    v1 = stack1.pop() / stack1.pop()
-                stack1.append(v1)
-            # print('stack1',stack1)
-        return stack1[0]
-
     epoch_best_rewards = []
     epoch_best_expressions = []
 
@@ -327,7 +282,7 @@ def train(
     # Initialize operators, RNN, and optimizer
     operators = Operators(operator_list, device)
     prior = make_prior(library=operators, config_prior=config_prior)
-    # print('AAAAAAAA',operators)
+
     dsr_rnn = DSRRNN(operators, hidden_size, device, min_length=min_length,
                      max_length=max_length, type=type, dropout=dropout, prior=prior).to(
         device)
@@ -411,10 +366,6 @@ def train(
             output, hidden_tensor = dsr_rnn.forward(input_tensor, hidden_tensor)
         # print('output', output)
         mcts_output = softmax(output.detach().numpy()[0],c=10)
-        # print('mcts_output',mcts_output)
-        sorted_id = sorted(range(len(mcts_output)), key=lambda x: mcts_output[x], reverse=False)
-
-        # expend_node = tree_policy(nod,dsr_rnn)
 
         expend_node = nod
         pip(expend_node,real_pi,pred_p,mcts_output)
