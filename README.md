@@ -97,8 +97,10 @@ results = train(
 python main.py 
 ```
 
->📋  Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters. 
-> 在main.py文件里面指定算法的各种参数，然后指定对应的X和Y，
+[//]: # ()
+[//]: # (>📋  Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters. )
+
+[//]: # (> 在main.py文件里面指定算法的各种参数，然后指定对应的X和Y，)
 ## Evaluation
 
   We evaluated the performance of AlphaSymbol on more than ten classic datasets in the field of symbolic regression. These datasets are labeled **Nguyen, Keijzer, Korns, Constant, Livermore, R, Vladislavlev, Jin, Neat, AI Feynman, and Others**. The datasets mentioned above collectively contain a total of 222 test expressions.
@@ -112,18 +114,20 @@ We compare AlphaSymbol with four symbol regression algorithms that have demonstr
 
 - **NeSymReS**. This algorithm is categorized as a large-scale pre-training model.
 
-The Pythagorean theorem is $a^2 + b^2 = c^2.$
+[//]: # (The Pythagorean theorem is $a^2 + b^2 = c^2.$)
 
 [//]: # (```eval)
 
 [//]: # (python eval.py --model-file mymodel.pth --benchmark imagenet)
 
 [//]: # (```)
-## Pre-trained Models
+[//]: # (## Pre-trained Models)
 
-You can download pretrained models here:
+[//]: # ()
+[//]: # (You can download pretrained models here:)
 
-- [My awesome model](https://drive.google.com/mymodel.pth) trained on ImageNet using parameters x,y,z. 
+[//]: # ()
+[//]: # (- [My awesome model]&#40;https://drive.google.com/mymodel.pth&#41; trained on ImageNet using parameters x,y,z. )
 
 ## Results
 
