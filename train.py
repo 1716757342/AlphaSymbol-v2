@@ -38,7 +38,6 @@ def train(
         inner_lr = 0.1,
         inner_num_epochs = 15,
         entropy_coefficient = 0.005,
-        risk_factor = 0.95,
         initial_batch_size = 500, ##2000
         batch_size = 500,
         num_batches = 200,
@@ -67,8 +66,6 @@ def train(
     - inner_lr (float): learning rate for constant optimization
     - inner_num_epochs (int): number of epochs for constant optimization
     - entropy_coefficient (float): entropy coefficient for RNN
-    - risk_factor (float, >0, <1): we discard the bottom risk_factor quantile
-      when training the RNN
     - batch_size (int): batch size for training the RNN
     - num_batches (int): number of batches (will stop early if found)
     - hidden_size (int): hidden dimension size for RNN
@@ -562,9 +559,9 @@ def train(
                 break
            # Compute v
             if (i == 0):
-                v = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
+                v = np.quantile(rewards, 1 - (1 - 0.95) / (initial_batch_size / batch_size))
             else:
-                v = np.quantile(rewards, risk_factor)
+                v = np.quantile(rewards, 0.95)
             indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] > v])
 
             if (len(indices_to_keep) == 0 and summary_print):
