@@ -31,7 +31,7 @@
 [//]: # (<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">)
 </p>
 <div align=center>
-<img src="AlphaSymbol8.png" alt="Image" width="80%" height="100%">
+<img src="figure/AlphaSymbol8.png" alt="Image" width="80%" height="100%">
 </div>
 
 
@@ -180,18 +180,18 @@ We compare AlphaSymbol with four symbol regression algorithms that have demonstr
 
 Recovery rate comparison of AlphaSymbol and four baselines on more than ten mainstream symbolic regression datasets.
 
-<img src="table1.png" alt="Image" width="70%" height="60%">
+<img src="figure/table1.png" alt="Image" width="70%" height="60%">
 
 
 Average Coefficient of Determination (R^2) on Various Datasets
 
-<img src="r2.png" alt="Image" width="20%" height="20%">
+<img src="figure/r2.png" alt="Image" width="20%" height="20%">
 
 
 This figure describes the recovery rate of AlphaSymbol and four other excellent algorithms on all Nguyen benchmarks under different levels of noise.
 
 [//]: # (![Sample results plot]&#40;noise.png&#41;)
-<img src="noise.png" alt="Image" width="60%" height="60%">
+<img src="figure/noise.png" alt="Image" width="60%" height="60%">
 
 
 ## Contributing
