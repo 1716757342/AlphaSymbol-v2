@@ -17,7 +17,6 @@ import random
 import torch
 import matplotlib.pyplot as plt
 from numpy import *
-import csv
 ###############################################################################
 # Main Function
 ###############################################################################

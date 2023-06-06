@@ -101,7 +101,6 @@ class DSRRNN(nn.Module):
 
 
     def sample_n_expressions(self, n,mt_node, mt_cou, S, min_length=2, max_length=15):
-        """将tensorflow版本的采样和约束添加过程移植进来"""
 
         sequences = torch.zeros((n, 0))
         entropies = torch.zeros((n, 0))  # Entropy for each sequence

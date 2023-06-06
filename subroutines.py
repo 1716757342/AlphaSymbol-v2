@@ -3,8 +3,6 @@
 # from numba import jit, prange
 import numpy as np
 
-
-# @jit(nopython=True, parallel=True)
 def parents_siblings(tokens, arities, parent_adjust, empty_parent, empty_sibling):
     """
     Given a batch of action sequences, computes and returns the parents and
@@ -42,7 +40,6 @@ def parents_siblings(tokens, arities, parent_adjust, empty_parent, empty_sibling
 
     siblings : np.ndarray, shape=(N,), dtype=np.int32
         Siblings of the next element of each action sequence.
-
     """
     N, L = tokens.shape
 

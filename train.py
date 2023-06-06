@@ -1,5 +1,3 @@
-
-
 import time
 import random
 import torch
@@ -189,9 +187,9 @@ def train(
             next_state.set_counter(self.counter, random_choice)
             next_state.set_cumulative_choices(self.cumulative_choices + [random_choice])  ## A list of selected symbols
             # if next_state.counter == 0:
-            #     next_state.set_current_value(all_farward(next_state.cumulative_choices, X_rnn))  ##加以后的值
+            #     next_state.set_current_value(all_farward(next_state.cumulative_choices, X_rnn))  ##Add the value after
             # else:
-            #     next_state.set_current_value(None)  ##加以后的值
+            #     next_state.set_current_value(None)  ##Add the value after
             next_state.set_current_round_index(self.current_round_index + 1)  ##Calculated length
 
             return next_state
@@ -371,7 +369,8 @@ def train(
         pip(expend_node,real_pi,pred_p,mcts_output)
         while expend_node.get_state().is_terminal() == False:
             # print(node.get_state().counter)
-            if expend_node.is_all_expand():  ##如果已经扩展完毕
+            if expend_node.is_all_expand():  ##If the extension is complete
+
                 # print('z'*100)
                 expend_node = best_child(expend_node, True)
                 pip(expend_node, real_pi, pred_p, mcts_output)
@@ -423,10 +422,9 @@ def train(
                 break
             else:
                 # print('x' * 100)
-                expend_node = expand(expend_node)  ##如果没有扩展完
+                expend_node = expand(expend_node)  ## If the expansion is not complete
 
-        # print('real_pi',real_pi)
-        # print('pred_p',pred_p)
+
         loss_real_pi = np.array(real_pi)
         loss_pred_p = np.array(pred_p)
         if st%20 == 0:
@@ -493,8 +491,6 @@ def train(
             # Optimize constants of expressions (training data)
             best_reward = [-np.inf]
             expressions_2 = (expressions).copy()
-            # print('expressions_2',expressions[0])
-            # print('expressions',expressions[0])
 
             for p in range(1):
                 optimize_constants(expressions, X_constants, y_constants, inner_lr, inner_num_epochs, inner_optimizer)
@@ -588,10 +584,6 @@ def train(
             # print(loss_real_pi)  #.detach().numpy()
             loss_r = torch.tensor(loss_real_pi[0])
             loss_p = torch.tensor(loss_pred_p[0])
-            # print(loss_r)
-            # print(loss_p)
-            # print('log : ',torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
-            # loss = 1 * -1 * lr * (l_zv + entropy_grad) + 1 * torch.mean((loss_r - loss_p)**2)
             loss = 1 * -1 * lr * (l_zv) + 0.1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
             loss.requires_grad_(True)
             loss.backward()
