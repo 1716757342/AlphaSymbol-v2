@@ -36,7 +36,7 @@
 
 
 
-This repository is the official implementation of [My Paper Title](https://arxiv.org/abs/2030.12345). 
+[//]: # (This repository is the official implementation of [My Paper Title]&#40;https://arxiv.org/abs/2030.12345&#41;. )
 
 ## Description
 It is an important purpose of scientific research to find a formula to describe the operation of the physical world from observational data. In this paper, we propose a method, AlphaSymbol, which can achieve this goal without human experience.
@@ -60,7 +60,7 @@ pip install -r requirements.txt # To install all the required dependencies.
 
 [//]: # (>📋  Describe how to set up the environment, e.g. pip/conda/docker commands, download datasets, etc...)
 
-## Start
+## Getting started
 
 (1), Setting the appropriate parameters in the `main.py`  file
 ```js
@@ -95,7 +95,42 @@ results = train(
 ```
 (2), In the `config_prior.py` file, select the restrictions to apply during the search (true or false).
 (Note that the maximum and minimum length restrictions in `config_prior.py` are the same as those in main.py.)
-
+```js
+{"prior": {
+  "length": {
+    "min_": 2,
+    "max_": 20,
+    "on": true
+  },
+  "repeat": {
+    "tokens": "c",
+    "min_": null,
+    "max_": 11,
+    "on": true
+  },
+  "inverse": {
+    "on": true
+  },
+  "trig": {
+    "on": true
+  },
+  "const": {
+    "on": true
+  },
+  "no_inputs": {
+    "on": true
+  },
+  "uniform_arity": {
+    "on": false
+  },
+  "soft_length": {
+    "loc": 10,
+    "scale": 5,
+    "on": false
+  }
+ }
+}
+```
 (3), Getting started
 ```train
 python main.py 
