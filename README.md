@@ -39,7 +39,9 @@
 This repository is the official implementation of [My Paper Title](https://arxiv.org/abs/2030.12345). 
 
 ## Description
-
+It is an important purpose of scientific research to find a formula to describe the operation of the physical world from observational data. In this paper, we propose a method, AlphaSymbol, which can achieve this goal without human experience.
+Specifically, we use the "collaboration" between LSTM and MCTS algorithms to efficiently discover mathematical formulas from data. Compared with the traditional machine learning algorithm, the result obtained by AlphaSymbol is a mathematical formula, which can not only fit the data well, but also be concise and analyzable.
+For example, in the physical formula $\mathcal{P = FV}$, we can easily analyze that, given a constant power $\mathcal{P}$, to obtain a larger force $\mathcal{F}$, we must decrease the velocity $\mathcal{V}$. This is also why vehicles slow down when going uphill in real-life scenarios. However, a model obtained from a traditional machine learning algorithm cannot intuitively derive such useful conclusions. 
 
 ## Requirements
 

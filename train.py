@@ -38,6 +38,7 @@ def train(
         inner_lr = 0.1,
         inner_num_epochs = 15,
         entropy_coefficient = 0.005,
+        risk_factor = 0.95,
         initial_batch_size = 500, ##2000
         batch_size = 500,
         num_batches = 200,
@@ -66,6 +67,8 @@ def train(
     - inner_lr (float): learning rate for constant optimization
     - inner_num_epochs (int): number of epochs for constant optimization
     - entropy_coefficient (float): entropy coefficient for RNN
+    - risk_factor (float, >0, <1): we discard the bottom risk_factor quantile
+      when training the RNN
     - batch_size (int): batch size for training the RNN
     - num_batches (int): number of batches (will stop early if found)
     - hidden_size (int): hidden dimension size for RNN
@@ -429,7 +432,7 @@ def train(
         if st%20 == 0:
             loss_real_pi = np.array(real_pi)
             loss_pred_p = np.array(pred_p)
-        print('MCTS', expend_node.get_state().cumulative_choices)
+        # print('MCTS', expend_node.get_state().cumulative_choices)
         MS = expend_node.get_state().cumulative_choices[0]
         if MS[0] == 'c':
             backup(expend_node, -10e10)
@@ -439,7 +442,7 @@ def train(
         # print('expend_node.get_state().cumulative_choices : ',expend_node.get_state().cumulative_choices)
         MT_node = expend_node.get_state().cumulative_choices
         # MT_node = ['cos', 'var_x']
-        print('MT_node', MT_node)
+        # print('MT_node', MT_node)
 
 
         MT_cou = expend_node.get_state().counter
@@ -491,7 +494,7 @@ def train(
             best_reward = [-np.inf]
             expressions_2 = (expressions).copy()
             # print('expressions_2',expressions[0])
-            print('expressions',expressions[0])
+            # print('expressions',expressions[0])
 
             for p in range(1):
                 optimize_constants(expressions, X_constants, y_constants, inner_lr, inner_num_epochs, inner_optimizer)
@@ -540,11 +543,11 @@ def train(
             )
             # print(best_list[0])
             if len(best_list) != 0:
-                print('z'*100)
+                # print('z'*100)
                 optimize_constants(best_list, X_constants, y_constants, inner_lr, inner_num_epochs, inner_optimizer)
                 reward_2 = benchmark(best_list[0], X_rnn, y_rnn, best_seq, best_seq_l,N_var, index_x1)
                 # print('best_list',best_list[0])
-            print(reward_2)
+            # print(reward_2)
             if (reward_2 > best_performance):
                 print('best_performance',best_performance)
                 best_performance = torch.tensor(reward_2)
@@ -559,9 +562,9 @@ def train(
                 break
            # Compute v
             if (i == 0):
-                v = np.quantile(rewards, 1 - (1 - 0.95) / (initial_batch_size / batch_size))
+                v = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
             else:
-                v = np.quantile(rewards, 0.95)
+                v = np.quantile(rewards, risk_factor)
             indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] > v])
 
             if (len(indices_to_keep) == 0 and summary_print):
@@ -587,9 +590,9 @@ def train(
             loss_p = torch.tensor(loss_pred_p[0])
             # print(loss_r)
             # print(loss_p)
-            print('log : ',torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
+            # print('log : ',torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
             # loss = 1 * -1 * lr * (l_zv + entropy_grad) + 1 * torch.mean((loss_r - loss_p)**2)
-            loss = 1 * -1 * lr * (l_zv) + 0 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
+            loss = 1 * -1 * lr * (l_zv) + 0.1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
             loss.requires_grad_(True)
             loss.backward()
             optim.step()

@@ -54,6 +54,7 @@ def main():
         inner_lr = 0.1,
         inner_num_epochs = 10,
         entropy_coefficient = 0.005,
+        risk_factor = 0.95,
         initial_batch_size = 1000,
         batch_size = 1000,
         num_batches = 10000,
