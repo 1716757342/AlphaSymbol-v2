@@ -60,7 +60,7 @@ pip install -r requirements.txt # To install all the required dependencies.
 
 [//]: # (>📋  Describe how to set up the environment, e.g. pip/conda/docker commands, download datasets, etc...)
 
-## Discovering Formulas
+## Start
 
 (1), Setting the appropriate parameters in the `main.py`  file
 ```js
