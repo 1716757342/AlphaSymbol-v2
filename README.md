@@ -131,7 +131,7 @@ results = train(
  }
 }
 ```
-(3), Getting started
+(3), Start finding formulas
 ```train
 python main.py 
 ```
