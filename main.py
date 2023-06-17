@@ -39,8 +39,8 @@ def main():
         y_constants,
         X_rnn,
         y_rnn,
-        operator_list = S,
-        # operator_list = ['*','+','-','/','sin','cos','var_x1'],
+        # operator_list = S,
+        operator_list = ['*','+','-','/','sin','cos','var_x1'],
         min_length = 2,
         max_length = 40,
         type = 'lstm',
@@ -53,7 +53,6 @@ def main():
         inner_lr = 0.1,
         inner_num_epochs = 10,
         entropy_coefficient = 0.005,
-        risk_factor = 0.95,
         initial_batch_size = 1000,
         batch_size = 1000,
         num_batches = 10000,
@@ -75,8 +74,6 @@ def main():
     plt.title('Reward over Time')
     plt.show()
 
-
-
 ##############################################################################
 # Getting Data
 ##############################################################################
@@ -85,16 +82,20 @@ def get_data():
     """Constructs data for model (currently x^3 + x^2 + x)
     """
     # X = np.arange(0.0001, 1.1, 0.01) * 1
-    X = np.random.randn(20,1) * 1
+    X = np.random.rand(100,1) * 1
     # X = (np.random.rand(20) * 2 - 1) * 2
     # X.sort()
+    # x1 = X.reshape((-1,1))
     x1 = X[:,0]
-    y = x1**4 + x1**3 + x1**2 + x1
-
-    for j in range(X.shape[1]):
-        S.append('var_x'+str(j+1))
-    print(S)
-
+    x1.sort()
+    print(x1)
+    # x1 = X
+    # y = x1 ** 3 + x1 ** 2 + x1
+    # y = x1 ** 4 + x1 ** 3 + x1 ** 2 + x1
+    y = x1**5 + x1**4 + x1**3 + x1**2 + x1
+    # for j in range(X.shape[1]):
+    #     S.append('var_x'+str(j+1))
+    # print(S)
     # Split randomly
     comb = list(zip(X, y))
     random.shuffle(comb)

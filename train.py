@@ -36,7 +36,6 @@ def train(
         inner_lr = 0.1,
         inner_num_epochs = 15,
         entropy_coefficient = 0.005,
-        risk_factor = 0.95,
         initial_batch_size = 500, ##2000
         batch_size = 500,
         num_batches = 200,
@@ -65,8 +64,6 @@ def train(
     - inner_lr (float): learning rate for constant optimization
     - inner_num_epochs (int): number of epochs for constant optimization
     - entropy_coefficient (float): entropy coefficient for RNN
-    - risk_factor (float, >0, <1): we discard the bottom risk_factor quantile
-      when training the RNN
     - batch_size (int): batch size for training the RNN
     - num_batches (int): number of batches (will stop early if found)
     - hidden_size (int): hidden dimension size for RNN
@@ -224,12 +221,12 @@ def train(
             if 1:
                 # print('node.get_visit_times',node.get_visit_times())
                 # right = 2.0 * np.sqrt(math.log(node.get_visit_times() + 0.0000001) / (sub_node.get_visit_times()+0.0000001))
-                # if node != None:
-                #     right = 4/len(operator_list) * np.sqrt(node.get_visit_times()) / (1 + sub_node.get_visit_times())
-                # else:
-                #     right = 4/len(operator_list) * np.sqrt(1) / (1 * sub_node.get_visit_times())
+                if node != None:
+                    right = 1 * np.sqrt(node.get_visit_times()) / (1 + sub_node.get_visit_times())
+                else:
+                    right = 1 * np.sqrt(1) / (1 * sub_node.get_visit_times())
 
-                right = 2.0 * 1 / (1 + 1 * sub_node.get_visit_times())
+                # right = 2.0 * 1 / (1 + 1 * sub_node.get_visit_times())
             # else:
             #     right = 2.0 * np.sqrt(math.log(node.get_visit_times()) / (sub_node.get_visit_times()+0.0000001))
 
@@ -334,10 +331,11 @@ def train(
             # print('vn',vn)
         vn = np.array(vn)
         # if np.sum(vn) >= 2 * len(operator_list):
-        if np.sum(vn) >= 2:
+        if np.sum(vn) >= 3:
             # print('vn'*20)
-            rpi.append(softmax(vn, 1))
+            rpi.append(softmax(vn, 0))
             pp.append(PP)
+
     st = 0
     N_var = 0
     for v in operator_list:
@@ -424,12 +422,13 @@ def train(
                 # print('x' * 100)
                 expend_node = expand(expend_node)  ## If the expansion is not complete
 
-
         loss_real_pi = np.array(real_pi)
         loss_pred_p = np.array(pred_p)
-        if st%20 == 0:
-            loss_real_pi = np.array(real_pi)
-            loss_pred_p = np.array(pred_p)
+        print('loss_real_pi', loss_real_pi)
+        print('loss_pred_p', loss_pred_p)
+        # if st%20 == 0:
+        #     loss_real_pi = np.array(real_pi)
+        #     loss_pred_p = np.array(pred_p)
         # print('MCTS', expend_node.get_state().cumulative_choices)
         MS = expend_node.get_state().cumulative_choices[0]
         if MS[0] == 'c':
@@ -558,9 +557,9 @@ def train(
                 break
            # Compute v
             if (i == 0):
-                v = np.quantile(rewards, 1 - (1 - risk_factor) / (initial_batch_size / batch_size))
+                v = np.quantile(rewards, 1 - (1 - 0.95) / (initial_batch_size / batch_size))
             else:
-                v = np.quantile(rewards, risk_factor)
+                v = np.quantile(rewards, 0.95)
             indices_to_keep = torch.tensor([j for j in range(len(rewards)) if rewards[j] > v])
 
             if (len(indices_to_keep) == 0 and summary_print):
@@ -582,9 +581,22 @@ def train(
             #Compute loss and backpropagate
             # loss = 1 * -1 * lr * (l_zv + entropy_grad) + 1 * np.sum((loss_pred_p - loss_real_pi)**2)/len(operator_list)
             # print(loss_real_pi)  #.detach().numpy()
-            loss_r = torch.tensor(loss_real_pi[0])
-            loss_p = torch.tensor(loss_pred_p[0])
-            loss = 1 * -1 * lr * (l_zv) + 0.1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
+            loss_alpha = []
+            for i in range(np.shape(loss_real_pi)[0]):
+                loss_r = torch.tensor(loss_real_pi[i])
+                loss_p = torch.tensor(loss_pred_p[i])
+                loss_alpha.append(0.001 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
+                # loss_alpha = loss_alpha + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001))
+            loss_alpha = torch.tensor(loss_alpha)
+            loss_alpha = torch.mean(loss_alpha)
+            # print('loss_r',loss_r)
+            # print('loss_p',loss_p)
+
+            loss = 1 * -1 * lr * (l_zv) +   1* loss_alpha - 1 * lr * (entropy_grad)
+            # loss = 1 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
+            print('loss_alpha',loss_alpha)
+            print('risk',1 * -1 * lr * (l_zv)- 1 * lr * (entropy_grad))
+
             loss.requires_grad_(True)
             loss.backward()
             optim.step()
@@ -642,3 +654,15 @@ def reward_nrmse(y_pred, y_rnn):
     val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
     return val.item()
     #####endendend#####
+
+def r2(y_pred, y_rnn):
+    """Compute R2 between predicted points and actual points
+    # """
+    #### S_NRMSE
+    loss = nn.MSELoss()
+    val = loss(y_pred, y_rnn)  # Convert to RMSE
+    val = torch.std(y_rnn) * val  # Normalize using stdev of targets
+    val = torch.sqrt(val)
+    # print('val',val)
+    val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
+    return val.item()
