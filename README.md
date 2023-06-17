@@ -194,6 +194,7 @@ This figure describes the recovery rate of AlphaSymbol and four other excellent 
 <img src="figure/noise.png" alt="Image" width="60%" height="60%">
 
 
-## Contributing
+[//]: # (## Contributing)
 
->📋  Pick a licence and describe how to contribute to your code repository. 
+[//]: # ()
+[//]: # (>📋  Pick a licence and describe how to contribute to your code repository. )

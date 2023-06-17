@@ -424,8 +424,8 @@ def train(
 
         loss_real_pi = np.array(real_pi)
         loss_pred_p = np.array(pred_p)
-        print('loss_real_pi', loss_real_pi)
-        print('loss_pred_p', loss_pred_p)
+        # print('loss_real_pi', loss_real_pi)
+        # print('loss_pred_p', loss_pred_p)
         # if st%20 == 0:
         #     loss_real_pi = np.array(real_pi)
         #     loss_pred_p = np.array(pred_p)
@@ -594,8 +594,8 @@ def train(
 
             loss = 1 * -1 * lr * (l_zv) +   1* loss_alpha - 1 * lr * (entropy_grad)
             # loss = 1 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
-            print('loss_alpha',loss_alpha)
-            print('risk',1 * -1 * lr * (l_zv)- 1 * lr * (entropy_grad))
+            # print('loss_alpha',loss_alpha)
+            # print('risk',1 * -1 * lr * (l_zv)- 1 * lr * (entropy_grad))
 
             loss.requires_grad_(True)
             loss.backward()
