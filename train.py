@@ -591,14 +591,14 @@ def train(
             for i in range(np.shape(loss_real_pi)[0]):
                 loss_r = torch.tensor(loss_real_pi[i])
                 loss_p = torch.tensor(loss_pred_p[i])
-                loss_alpha.append(0.001 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
+                loss_alpha.append(0.1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)))
                 # loss_alpha = loss_alpha + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001))
             loss_alpha = torch.tensor(loss_alpha)
             loss_alpha = torch.mean(loss_alpha)
             # print('loss_r',loss_r)
             # print('loss_p',loss_p)
 
-            loss = 1 * -1 * lr * (l_zv) + 0 * loss_alpha - 1 * lr * (entropy_grad)
+            loss = 1 * -1 * lr * (l_zv) + 0.1 * loss_alpha - 1 * lr * (entropy_grad)
             # loss = 1 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
             # print('loss_alpha',loss_alpha)
             # print('risk',1 * -1 * lr * (l_zv)- 1 * lr * (entropy_grad))
