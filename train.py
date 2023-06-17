@@ -219,14 +219,13 @@ def train(
                 C = 0.0
             left = sub_node.get_quality_value() / (sub_node.get_visit_times() + 0.0000001)
             if 1:
-                # print('node.get_visit_times',node.get_visit_times())
                 # right = 2.0 * np.sqrt(math.log(node.get_visit_times() + 0.0000001) / (sub_node.get_visit_times()+0.0000001))
-                if node != None:
-                    right = 1 * np.sqrt(node.get_visit_times()) / (1 + sub_node.get_visit_times())
-                else:
-                    right = 1 * np.sqrt(1) / (1 * sub_node.get_visit_times())
+                # if node != None:
+                #     right = 1 * np.sqrt(node.get_visit_times()) / (1 + sub_node.get_visit_times())
+                # else:
+                #     right = 1 * np.sqrt(1) / (1 * sub_node.get_visit_times())
 
-                # right = 2.0 * 1 / (1 + 1 * sub_node.get_visit_times())
+                right = 2.0 * 1 / (0.1 + 1 * sub_node.get_visit_times())
             # else:
             #     right = 2.0 * np.sqrt(math.log(node.get_visit_times()) / (sub_node.get_visit_times()+0.0000001))
 
@@ -496,13 +495,17 @@ def train(
 
                 # Benchmark expressions (test dataset)
                 rewards = []
+                RR = []
                 for ep in range(len(expressions)):
                     # print('sequence_lengths',int(sequence_lengths[ep]))
-                    rewards.append(benchmark(expressions[ep], X_rnn, y_rnn, sequences[ep],int(sequence_lengths[ep]), N_var, index_x1))
+                    re,RR2 = benchmark(expressions[ep], X_rnn, y_rnn, sequences[ep], int(sequence_lengths[ep]), N_var, index_x1)
+                    rewards.append(re)
+                    RR.append(RR2)
                 if max(rewards)>=max(best_reward):
                     best_reward = rewards
 
             rewards = torch.tensor(best_reward)
+
 
             # Update best expression
 
@@ -511,8 +514,11 @@ def train(
             epoch_best_rewards.append(max(rewards).item())
             best_epoch_seq = sequences[np.argmax(rewards)]
             if (max(rewards) > best_performance):
-                print('best_performance',best_performance)
+
                 best_performance = max(rewards)
+                best_R2 = max(RR)
+                print('best_performance', best_performance)
+                print('best_R2', best_R2)
                 best_expression = best_epoch_expression
                 # print('best_expression',best_expression)
                 best_seq = best_epoch_seq
@@ -540,7 +546,7 @@ def train(
             if len(best_list) != 0:
                 # print('z'*100)
                 optimize_constants(best_list, X_constants, y_constants, inner_lr, inner_num_epochs, inner_optimizer)
-                reward_2 = benchmark(best_list[0], X_rnn, y_rnn, best_seq, best_seq_l,N_var, index_x1)
+                reward_2,_ = benchmark(best_list[0], X_rnn, y_rnn, best_seq, best_seq_l,N_var, index_x1)
                 # print('best_list',best_list[0])
             # print(reward_2)
             if (reward_2 > best_performance):
@@ -592,7 +598,7 @@ def train(
             # print('loss_r',loss_r)
             # print('loss_p',loss_p)
 
-            loss = 1 * -1 * lr * (l_zv) +   1* loss_alpha - 1 * lr * (entropy_grad)
+            loss = 1 * -1 * lr * (l_zv) + 0 * loss_alpha - 1 * lr * (entropy_grad)
             # loss = 1 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
             # print('loss_alpha',loss_alpha)
             # print('risk',1 * -1 * lr * (l_zv)- 1 * lr * (entropy_grad))
@@ -610,6 +616,7 @@ def train(
             print(f"""
             Time (S) : {round(float(time.time() - start), 2)}
             Best reward: {round(best_performance.item(),4)}
+            Best R2: {round(best_R2,4)}
             Best Expression: {best_expression}
             """)
         if (best_performance >= 0.9999):
@@ -639,7 +646,8 @@ def benchmark(expression, X_rnn, y_rnn, SEQ, LEN, Nvar,indx):
                 loss_x = loss_x + reward_nrmse(X_pred, X_rnn[:, 0])
 
         rew = reward_nrmse(y_pred, y_rnn) + C * loss_x
-        return 1/(1+rew)
+        rr2 = r2(y_pred, y_rnn)
+        return 1/(1+rew), rr2
 
 def reward_nrmse(y_pred, y_rnn):
     """Compute S_NRMSE between predicted points and actual points
@@ -661,8 +669,6 @@ def r2(y_pred, y_rnn):
     #### S_NRMSE
     loss = nn.MSELoss()
     val = loss(y_pred, y_rnn)  # Convert to RMSE
-    val = torch.std(y_rnn) * val  # Normalize using stdev of targets
-    val = torch.sqrt(val)
-    # print('val',val)
-    val = min(torch.nan_to_num(val, nan=1e10), torch.tensor(1e10))  # Fix nan and clip
-    return val.item()
+    R2 = 1-(val)/(torch.mean((y_rnn-torch.mean(y_rnn))**2))
+    R2 = max(torch.nan_to_num(R2, nan=-1e10), torch.tensor(-1e10))  # Fix nan and clip
+    return R2.item()

@@ -39,10 +39,10 @@ def main():
         y_constants,
         X_rnn,
         y_rnn,
-        # operator_list = S,
-        operator_list = ['*','+','-','/','sin','cos','var_x1'],
+        operator_list = S,
+        # operator_list = ['*','+','-','/','sin','cos','var_x1'],
         min_length = 2,
-        max_length = 40,
+        max_length = 20,
         type = 'lstm',
         num_layers = 4,
         hidden_size = 250,
@@ -88,14 +88,12 @@ def get_data():
     # x1 = X.reshape((-1,1))
     x1 = X[:,0]
     x1.sort()
-    print(x1)
-    # x1 = X
-    # y = x1 ** 3 + x1 ** 2 + x1
-    # y = x1 ** 4 + x1 ** 3 + x1 ** 2 + x1
-    y = x1**5 + x1**4 + x1**3 + x1**2 + x1
-    # for j in range(X.shape[1]):
-    #     S.append('var_x'+str(j+1))
-    # print(S)
+
+    y = x1 ** 3 + x1 ** 2 + x1
+
+    for j in range(X.shape[1]):
+        S.append('var_x'+str(j+1))
+    print(S)
     # Split randomly
     comb = list(zip(X, y))
     random.shuffle(comb)
