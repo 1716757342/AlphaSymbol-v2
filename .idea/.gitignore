@@ -1,4 +1,4 @@
-# 默认忽略的文件
+# Files ignored by default
 /shelf/
 /workspace.xml
 # Editor based HTTP client request
