@@ -183,7 +183,7 @@ Recovery rate comparison of AlphaSymbol and four baselines on more than ten main
 <img src="figure/table1.png" alt="Image" width="70%" height="60%">
 
 
-Average Coefficient of Determination (R^2) on Various Datasets
+Average Coefficient of Determination ($R^2$) on Various Datasets
 
 <img src="figure/r2.png" alt="Image" width="20%" height="20%">
 
