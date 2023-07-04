@@ -598,7 +598,7 @@ def train(
             # print('loss_r',loss_r)
             # print('loss_p',loss_p)
 
-            loss = 1 * -1 * lr * (l_zv) + 0.5 * loss_alpha - 1 * lr * (entropy_grad)
+            loss = 1 * -1 * lr * (l_zv) + 0.1 * loss_alpha - 1 * lr * (entropy_grad)
             # loss = 1 * -1 * lr * (l_zv) + 1 * torch.mean(loss_r * torch.log(loss_p.T + 0.001)) - 1 * lr * (entropy_grad)
             # print('loss_alpha',loss_alpha)
             # print('risk',1 * -1 * lr * (l_zv)- 1 * lr * (entropy_grad))
