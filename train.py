@@ -447,7 +447,7 @@ def train(
         initial_batch_size = int(int(i / len(operator_list) )** 2 + 100)
         # initial_batch_size = 1000 - int(int(i / len(operator_list)) ** 2 )
         initial_batch_size = min(initial_batch_size,1000)
-        initial_batch_size = 200
+        initial_batch_size = 500
         batch_size = initial_batch_size
         # print('initial_batch_size', initial_batch_size)
 
